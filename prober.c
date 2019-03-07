@@ -10,10 +10,10 @@
 
 static error_t parse_opt(int, char *, struct argp_state *);
 
-struct pkt {
+typedef struct pkt {
     size_t size;
     uint8_t * buf;
-};
+} Packet;
 
 struct arguments {
     uint8_t mac_addr[6];
@@ -22,7 +22,7 @@ struct arguments {
     char * mac_addr_str;
 };
 
-struct pkt * create_probe_req(struct arguments g, int num_arg, ...);
+Packet * create_probe_req(struct arguments g, int num_arg, ...);
 
 int main(int argc, char **argv) {
 
@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
     const uint8_t microsoft_vendor_data[] = {0x00,0x50,0xf2,0x08};
     struct frame_variable *microsoft_vendor  = create_frame_variable(221,4, &microsoft_vendor_data);
 
-    struct pkt * pkt = create_probe_req(g, 10, ssid, rates, extended_rates, dsset, htcaps, ext_caps, 
+    Packet * pkt = create_probe_req(g, 10, ssid, rates, extended_rates, dsset, htcaps, ext_caps, 
                                         interworking, apple_vendor, epigram_vendor, microsoft_vendor);
 
     if(pcap_sendpacket(handle, pkt->buf, pkt->size) != 0) {
@@ -100,8 +100,8 @@ int main(int argc, char **argv) {
     free(g.ssid);
 }
 
-struct pkt * create_probe_req(struct arguments g, int num_arg, ...) {
-    struct pkt *ret = malloc(sizeof(struct pkt));
+Packet * create_probe_req(struct arguments g, int num_arg, ...) {
+    Packet *ret = malloc(sizeof(Packet));
 
     /* parse variable args */
     va_list variable_params;
