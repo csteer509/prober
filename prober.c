@@ -4,16 +4,12 @@
 #include <argp.h>
 #include "print_helpers.h"
 #include "mac_address.h"
+#include "packet.h"
 
 #define MAX_INTERFACE_LEN 16
 #define MAX_SSID_LEN 16
 
 static error_t parse_opt(int, char *, struct argp_state *);
-
-typedef struct pkt {
-    size_t size;
-    uint8_t * buf;
-} Packet;
 
 struct arguments {
     uint8_t mac_addr[6];
@@ -87,14 +83,14 @@ int main(int argc, char **argv) {
     Packet * pkt = create_probe_req(g, 10, ssid, rates, extended_rates, dsset, htcaps, ext_caps, 
                                         interworking, apple_vendor, epigram_vendor, microsoft_vendor);
 
-    if(pcap_sendpacket(handle, pkt->buf, pkt->size) != 0) {
+    if(pcap_sendpacket(handle, pkt->buffer, pkt->size) != 0) {
         print_error(pcap_errbuf);
     }
 
     /* cleanup */
     pcap_close(handle);
     free(ssid);
-    free(pkt->buf);
+    free(pkt->buffer);
     free(g.mac_addr_str);
     free(g.interface);
     free(g.ssid);
@@ -120,8 +116,8 @@ Packet * create_probe_req(struct arguments g, int num_arg, ...) {
          + sizeof(struct i80211_hdr)
          + param_size;
 
-    ret->buf = malloc(size);
-    uint8_t *cur = ret->buf;
+    ret->buffer = malloc(size);
+    uint8_t *cur = ret->buffer;
 
     memcpy(cur, radioTapHeader, RADIOTAP_LEN);
     cur += RADIOTAP_LEN;
