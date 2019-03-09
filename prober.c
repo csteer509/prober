@@ -18,8 +18,6 @@ struct arguments {
     char * mac_addr_str;
 };
 
-Packet * create_probe_req(struct arguments g, int num_arg, ...);
-
 int main(int argc, char **argv) {
 
     /* g will hold the globals */
@@ -80,7 +78,7 @@ int main(int argc, char **argv) {
     const uint8_t microsoft_vendor_data[] = {0x00,0x50,0xf2,0x08};
     struct frame_variable *microsoft_vendor  = create_frame_variable(221,4, &microsoft_vendor_data);
 
-    Packet * pkt = create_probe_req(g, 10, ssid, rates, extended_rates, dsset, htcaps, ext_caps, 
+    Packet * pkt = create_probe_request(g.mac_addr, 10, ssid, rates, extended_rates, dsset, htcaps, ext_caps, 
                                         interworking, apple_vendor, epigram_vendor, microsoft_vendor);
 
     if(pcap_sendpacket(handle, pkt->buffer, pkt->size) != 0) {
@@ -95,50 +93,6 @@ int main(int argc, char **argv) {
     free(g.interface);
     free(g.ssid);
 }
-
-Packet * create_probe_req(struct arguments g, int num_arg, ...) {
-    Packet *ret = malloc(sizeof(Packet));
-
-    /* parse variable args */
-    va_list variable_params;
-    va_start(variable_params, num_arg);
-    size_t param_size = 0;
-    struct frame_variable *params[num_arg];
-    for (int i = 0; i < num_arg; i++) {
-        struct frame_variable *cur = va_arg(variable_params,
-                                            struct frame_variable *);
-        param_size += cur->len + sizeof(struct frame_variable);
-        params[i] = cur;
-    }
-    size_t size;
-    
-    size = sizeof(radioTapHeader)
-         + sizeof(struct i80211_hdr)
-         + param_size;
-
-    ret->buffer = malloc(size);
-    uint8_t *cur = ret->buffer;
-
-    memcpy(cur, radioTapHeader, RADIOTAP_LEN);
-    cur += RADIOTAP_LEN;
-
-    struct i80211_hdr *hdr = (struct i80211_hdr *) cur;
-    hdr->frame_ctrl = WLAN_FC_SUBTYPE_PROBE_REQ;
-    hdr->duration_id = 0x0000;
-    memcpy(hdr->addr1, BROADCAST_MAC, MAC_LEN);
-    memcpy(hdr->addr3, BROADCAST_MAC, MAC_LEN);
-    memcpy(hdr->addr2, g.mac_addr, MAC_LEN);
-    cur += sizeof(struct i80211_hdr);
-
-    for (int i = 0; i < num_arg; i++) {
-        memcpy(cur, params[i], params[i]->len + sizeof(struct frame_variable));
-        cur += params[i]->len + sizeof(struct frame_variable);
-    }
-    va_end(variable_params);
-    ret->size = size;
-    return ret;
-}
-
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
