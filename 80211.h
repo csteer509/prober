@@ -50,6 +50,8 @@ struct frame_variable {
     uint8_t buf[];
 }__attribute__((packed));
 
+static const struct frame_variable BROADCAST_SSID = { 0 , 0 , 0 };
+
 struct beacon_hdr {
     uint64_t timestamp;
     uint16_t interval;
