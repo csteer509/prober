@@ -50,7 +50,9 @@ struct frame_variable {
     uint8_t buf[];
 }__attribute__((packed));
 
-static const struct frame_variable BROADCAST_SSID = { 0 , 0 , 0 };
+static const struct frame_variable BROADCAST_SSID = { .id=0 , .len=0 , .buf=0 };
+
+static const struct frame_variable ASKEY_COM_SUPPORTED_RATES = { .id=1 , .len=8 , .buf={0x02,0x04,0x0b,0x16,0x0c,0x12,0x18,0x24} };
 
 struct beacon_hdr {
     uint64_t timestamp;
