@@ -97,3 +97,5 @@ struct frame_variable * create_frame_variable(uint8_t id, uint8_t len, const voi
     memcpy(v->buf, buf, len);
     return v;
 }
+
+//TODO Create a create_radiotap_header(size_t len) function to accomodate the creation of different sized radiotap headers.

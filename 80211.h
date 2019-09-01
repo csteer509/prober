@@ -17,6 +17,8 @@
 #define IEEE80211_FCTL_RETRY        0x0800
 
 static const uint8_t BROADCAST_MAC[6]= {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+
+//TODO Change this struct to a generic radiotap header struct that can be filled.
 static const uint8_t radioTapHeader[] = {
     0x00, 0x00,
     0x12, 0x00,
@@ -65,6 +67,13 @@ struct beacon_pkt {
     struct i80211_hdr *hdr;
     struct beacon_hdr *b_hdr;
     uint8_t *pkt;
+};
+
+struct i80211_packet {
+	//TODO Include the generic radiotap header struct once it is created.
+	size_t size;
+	struct i80211_hdr header;
+	struct frame_variable * vars;
 };
 
 struct frame_variable * create_frame_variable(uint8_t id, uint8_t len, const void * buf);
