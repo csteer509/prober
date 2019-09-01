@@ -44,7 +44,7 @@ struct i80211_hdr {
 }__attribute__((packed));
 
 struct frame_variable {
-    /* Defines a a simple TLV structure that is used accross control frame 
+    /* Defines a simple TLV structure that is used accross control frame 
      * messages.
      */
     uint8_t id;
