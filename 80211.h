@@ -74,6 +74,7 @@ struct i80211_packet {
 	size_t size;
 	struct i80211_hdr header;
 	struct frame_variable * vars;
+	//TODO Include frame check sequence
 };
 
 struct frame_variable * create_frame_variable(uint8_t id, uint8_t len, const void * buf);
